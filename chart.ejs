@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Charts</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <h1>📉 Charts</h1>
+    <nav>
+      <a href="/">Dashboard</a> | <a href="/chart">Chart</a> |
+      <a href="/analytics">Analytics</a>
+    </nav>
+
+    <canvas id="temperatureChart"></canvas>
+    <canvas id="humidityChart"></canvas>
+
+    <script>
+      const socket = io();
+      const tempCtx = document
+        .getElementById("temperatureChart")
+        .getContext("2d");
+      const humidityCtx = document
+        .getElementById("humidityChart")
+        .getContext("2d");
+
+      const tempChart = new Chart(tempCtx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [{ label: "Temperature", data: [], borderColor: "red" }],
+        },
+      });
+
+      const humidityChart = new Chart(humidityCtx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [{ label: "Humidity", data: [], borderColor: "blue" }],
+        },
+      });
+
+      socket.on("machineDataUpdate", (data) => {
+        const now = new Date().toLocaleTimeString();
+        tempChart.data.labels.push(now);
+        tempChart.data.datasets[0].data.push(data.temperature);
+        tempChart.update();
+
+        humidityChart.data.labels.push(now);
+        humidityChart.data.datasets[0].data.push(data.humidity);
+        humidityChart.update();
+      });
+    </script>
+  </body>
+</html>

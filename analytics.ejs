@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytics</title>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <h1>📋 Analytics</h1>
+    <table id="foodTable">
+      <tr>
+        <th>Unique ID</th>
+        <th>Food Name</th>
+        <th>Timestamp</th>
+        <th>Gas Level</th>
+        <th>Status</th>
+      </tr>
+    </table>
+
+    <script>
+      const socket = io();
+      socket.on("foodDataUpdate", (data) => {
+        const row = `<tr><td>${data["unique id"]}</td><td>${data["food name"]}</td><td>${data.timestamp}</td><td>${data["gas level"]}</td><td>${data.status}</td></tr>`;
+        document.getElementById("foodTable").innerHTML += row;
+      });
+    </script>
+  </body>
+</html>

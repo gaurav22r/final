@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .sensor-box {
+        font-size: 20px;
+        font-weight: bold;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #4caf50;
+        color: white;
+      }
+      nav {
+        margin-bottom: 20px;
+      }
+      nav a {
+        margin-right: 15px;
+        text-decoration: none;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📊 Vending Machine Dashboard</h1>
+    <nav>
+      <a href="/">Dashboard</a> | <a href="/chart">Chart</a> |
+      <a href="/analytics">Analytics</a>
+    </nav>
+
+    <h2>🛠 Machine Data</h2>
+    <div class="sensor-box">
+      <p>
+        <strong>Temperature:</strong>
+        <span id="tempDisplay"><%= latestMachineData.temperature %></span>°C
+      </p>
+      <p>
+        <strong>Humidity:</strong>
+        <span id="humidityDisplay"><%= latestMachineData.humidity %></span>%
+      </p>
+    </div>
+
+    <h2>🍎 Food Summary</h2>
+    <table>
+      <tr>
+        <th>Food Name</th>
+        <th>Fresh</th>
+        <th>Spoiled</th>
+      </tr>
+      <% Object.keys(foodSummary).forEach(food => { %>
+      <tr>
+        <td><%= food %></td>
+        <td id="fresh-<%= food.replace(/\s+/g, '-') %>">
+          <%= foodSummary[food].fresh %>
+        </td>
+        <td id="spoiled-<%= food.replace(/\s+/g, '-') %>">
+          <%= foodSummary[food].spoiled %>
+        </td>
+      </tr>
+      <% }); %>
+    </table>
+
+    <script>
+      const socket = io();
+      socket.on("machineDataUpdate", (data) => {
+        document.getElementById("tempDisplay").textContent = data.temperature;
+        document.getElementById("humidityDisplay").textContent = data.humidity;
+      });
+    </script>
+  </body>
+</html>
